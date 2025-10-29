@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 3.16)
+project(Numerical_Algebra LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_library(matrix_utils utils/src/matrix_utils.cpp)
+add_library(LU_solver utils/src/LU_solver.cpp)
+add_library(Cholesky_solver utils/src/Cholesky_solver.cpp)
+add_library(Condition_number utils/src/Condition_number.cpp)
+
+target_include_directories(matrix_utils PUBLIC utils/include)
+target_include_directories(LU_solver PUBLIC utils/include)
+target_include_directories(Cholesky_solver PUBLIC utils/include)
+target_include_directories(Condition_number PUBLIC utils/include)
+
+add_subdirectory(hw1)
+add_subdirectory(hw2)

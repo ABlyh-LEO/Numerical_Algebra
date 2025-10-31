@@ -1,8 +1,9 @@
 //
-// Created by Yanhong Liu on 2025/9/29.
+// Created by Yanhong Liu on 2025/10/30.
 //
 #include "matrix_utils.h"
 #include "LU_solver.h"
+#include "QR_solver.h"
 
 #define TYPE long double
 
@@ -27,15 +28,10 @@ int main() {
     }
     b[85][0] = 14;
 
-    LU_Solver<TYPE> solver1;
+    QR_Solver<TYPE> solver1;
     solver1.compute(A);
     Matrix<TYPE> x1 = solver1.solve(b);
     x1.transpose().print();
-
-    PLU_Solver<TYPE> solver2;
-    solver2.compute(A);
-    Matrix<TYPE> x2 = solver2.solve(b);
-    x2.transpose().print();
 
     return 0;
 }

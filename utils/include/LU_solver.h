@@ -5,17 +5,25 @@
 
 #include "matrix_utils.h"
 
-template<typename T, int _dim>
+template<typename T>
 class LU_Solver {
 private:
-    Matrix<T, _dim, _dim> Res;
+    int _dim;
+
+    Matrix<T> Res;
+
 public:
     LU_Solver() = default;
 
     ~LU_Solver() = default;
 
-    void compute(Matrix<T, _dim, _dim> &A) {
+    void compute(Matrix<T> &A) {
+        if (A.cols() != A.rows()) {
+            std::cerr << "Error(LU_Solver): Matrix is not square!" << std::endl;
+            return;
+        }
         Res = A;
+        _dim = A.cols();
         for (int k = 0; k < _dim; ++k) {
             if (Res[k][k] == 0) {
                 std::cerr << "Error(LU_Solver): Trying to use 0 as a divisor!" << std::endl;
@@ -30,8 +38,12 @@ public:
         }
     }
 
-    Matrix<T, _dim, 1> solve(const Matrix<T, _dim, 1> &b) {
-        Matrix<T, _dim, 1> y, x;
+    Matrix<T> solve(const Matrix<T> &b) {
+        if (_dim <= 0) {
+            std::cerr << "Error(LU_Solver): Matrix is not computed!" << std::endl;
+            return Matrix<T>();
+        }
+        Matrix<T> y(_dim, 1), x(_dim, 1);
         for (int i = 0; i < _dim; ++i) {
             y[i][0] = b[i][0];
             for (int j = 0; j < i; ++j) {
@@ -49,17 +61,24 @@ public:
     }
 };
 
-template<typename T, int _dim>
+template<typename T>
 class PLU_Solver {
 private:
-    Matrix<T, _dim, _dim> Res;
-    int P[_dim]{};
+    int _dim;
+    Matrix<T> Res;
+    std::vector<int> P;
 public:
     PLU_Solver() = default;
 
     ~PLU_Solver() = default;
 
-    void compute(const Matrix<T, _dim, _dim> &A) {
+    void compute(const Matrix<T> &A) {
+        if (A.cols() != A.rows()) {
+            std::cerr << "Error(PLU_Solver): Matrix is not square!" << std::endl;
+            return;
+        }
+        _dim = A.cols();
+        P.resize(_dim);
         Res = A;
         for (int i = 0; i < _dim; ++i) P[i] = i;
         for (int k = 0; k < _dim; ++k) {
@@ -88,8 +107,12 @@ public:
         }
     }
 
-    Matrix<T, _dim, 1> solve(const Matrix<T, _dim, 1> &b) {
-        Matrix<T, _dim, 1> y, x;
+    Matrix<T> solve(const Matrix<T> &b) {
+        if (_dim <= 0) {
+            std::cerr << "Error(PLU_Solver): Matrix is not computed!" << std::endl;
+            return Matrix<T>();
+        }
+        Matrix<T> y(_dim, 1), x(_dim, 1);
         for (int i = 0; i < _dim; ++i) {
             y[i][0] = b[P[i]][0];
             for (int j = 0; j < i; ++j) {
@@ -106,8 +129,12 @@ public:
         return x;
     }
 
-    Matrix<T, _dim, 1> solveT(const Matrix<T, _dim, 1> &b) {// solve ATx = b
-        Matrix<T, _dim, 1> z, y, x;
+    Matrix<T> solveT(const Matrix<T> &b) {// solve ATx = b
+        if (_dim <= 0) {
+            std::cerr << "Error(PLU_Solver): Matrix is not computed!" << std::endl;
+            return Matrix<T>();
+        }
+        Matrix<T> z(_dim, 1), y(_dim, 1), x(_dim, 1);
         for (int i = 0; i < _dim; ++i) {
             z[i][0] = b[i][0];
             for (int j = 0; j < i; ++j) {

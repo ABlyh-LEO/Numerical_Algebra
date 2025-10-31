@@ -8,21 +8,26 @@
 #include "LU_solver.h"
 #include "matrix_utils.h"
 
-template<typename T, int _dim>
-T condition_number_oo(const Matrix<T, _dim, _dim> &A) {
-    T norm_A = A.oo_norm();
-    Matrix<T, _dim, 1> x;
+template<typename T>
+T condition_number_oo(const Matrix<T> &A) {
+    if (A.cols() != A.rows()) {
+        std::cerr << "Error(condition_number_oo): Matrix is not square!" << std::endl;
+        return -1;
+    }
+    const int _dim = A.cols();
+    T norm_A = A.norm_oo();
+    Matrix<T> x(_dim, 1);
     for (int i = 0; i < _dim; ++i) {
         x[i][0] = 1.0 / _dim;
     }
-    PLU_Solver<T, _dim> solver;
+    PLU_Solver<T> solver;
     solver.compute(A);
     T norm_A_inv;
     for (;;) {
         auto w = solver.solveT(x);
         auto v = w.sign();
         auto z = solver.solve(v);
-        auto z_oo_norm = z.oo_norm();
+        auto z_oo_norm = z.norm_oo();
         if (z_oo_norm <= (z.transpose() * x)[0][0]) {
             norm_A_inv = w.norm_1();
             break;

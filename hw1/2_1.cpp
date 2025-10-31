@@ -7,7 +7,7 @@
 #define TYPE float
 
 int main() {
-    Matrix<TYPE, 100, 100> A;
+    Matrix<TYPE> A(100, 100);
     for (int i = 0; i < 100; ++i) {
         for (int j = 0; j < 100; ++j) {
             if (i == j) {
@@ -20,7 +20,7 @@ int main() {
         }
     }
 
-    Matrix<TYPE, 100, 1> b;
+    Matrix<TYPE> b(100, 1);
 //    for (int i = 1; i < 99; ++i) {
 //        b[i][0] = 12;
 //    }
@@ -31,14 +31,14 @@ int main() {
         b[i][0] = std::rand() / 100.0f;
     }
 
-    Cholesky_solver<TYPE, 100> solver1;
+    Cholesky_solver<TYPE> solver1;
     solver1.compute(A);
-    Matrix<TYPE, 100, 1> x1 = solver1.solve(b);
+    Matrix<TYPE> x1 = solver1.solve(b);
     x1.transpose().print();
 
-    Better_Cholesky_solver<TYPE, 100> solver2;
+    Better_Cholesky_solver<TYPE> solver2;
     solver2.compute(A);
-    Matrix<TYPE, 100, 1> x2 = solver2.solve(b);
+    Matrix<TYPE> x2 = solver2.solve(b);
     x2.transpose().print();
 
     return 0;

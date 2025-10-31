@@ -8,17 +8,23 @@
 #include <valarray>
 #include "matrix_utils.h"
 
-template<typename T, int _dim>
+template<typename T>
 class Cholesky_solver {
 private:
-    Matrix<T, _dim, _dim> L;
+    Matrix<T> L;
+    int _dim;
 public:
     Cholesky_solver() = default;
 
     ~Cholesky_solver() = default;
 
-    void compute(const Matrix<T, _dim, _dim> &A) {
-        L = Matrix<T, _dim, _dim>();
+    void compute(const Matrix<T> &A) {
+        if (A.cols() != A.rows()) {
+            std::cerr << "Error(Cholesky_solver): Matrix is not square!" << std::endl;
+            return;
+        }
+        _dim = A.cols();
+        L = Matrix<T>(_dim, _dim);
         for (int i = 0; i < _dim; ++i) {
             for (int j = 0; j <= i; ++j) {
                 T sum = 0;
@@ -38,8 +44,12 @@ public:
         }
     }
 
-    Matrix<T, _dim, 1> solve(const Matrix<T, _dim, 1> &b) {
-        Matrix<T, _dim, 1> y, x;
+    Matrix<T> solve(const Matrix<T> &b) {
+        if (_dim <= 0) {
+            std::cerr << "Error(Cholesky_solver): Matrix is not computed!" << std::endl;
+            return Matrix<T>();
+        }
+        Matrix<T> y(_dim, 1), x(_dim, 1);
         for (int i = 0; i < _dim; ++i) {
             y[i][0] = b[i][0];
             for (int j = 0; j < i; ++j) {
@@ -58,18 +68,25 @@ public:
     }
 };
 
-template<typename T, int _dim>
+template<typename T>
 class Better_Cholesky_solver { //LDLT
 private:
-    Matrix<T, _dim, _dim> L;
-    T v[_dim]{};
+    Matrix<T> L;
+    std::vector<T> v{};
+    int _dim;
 public:
     Better_Cholesky_solver() = default;
 
     ~Better_Cholesky_solver() = default;
 
-    void compute(const Matrix<T, _dim, _dim> &A) {
-        L = Matrix<T, _dim, _dim>();
+    void compute(const Matrix<T> &A) {
+        if (A.cols() != A.rows()) {
+            std::cerr << "Error(Better_Cholesky_solver): Matrix is not square!" << std::endl;
+            return;
+        }
+        _dim = A.cols();
+        v.resize(_dim);
+        L = Matrix<T>(_dim, _dim);
         for (int i = 0; i < _dim; ++i) {
             for (int j = 0; j <= i; ++j) {
                 T sum = 0;
@@ -87,8 +104,12 @@ public:
         }
     }
 
-    Matrix<T, _dim, 1> solve(const Matrix<T, _dim, 1> &b) {
-        Matrix<T, _dim, 1> y, z, x;
+    Matrix<T> solve(const Matrix<T> &b) {
+        if (_dim <= 0) {
+            std::cerr << "Error(Better_Cholesky_solver): Matrix is not computed!" << std::endl;
+            return Matrix<T>();
+        }
+        Matrix<T> y(_dim, 1), z(_dim, 1), x(_dim, 1);
         for (int i = 0; i < _dim; ++i) {
             y[i][0] = b[i][0];
             for (int j = 0; j < i; ++j) {

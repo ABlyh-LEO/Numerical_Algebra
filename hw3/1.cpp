@@ -7,7 +7,7 @@
 #include "QR_solver.h"
 #include "Cholesky_solver.h"
 
-#define TYPE long double
+#define TYPE double
 #define SHOW_RESULT 0
 
 int main() {

@@ -22,7 +22,7 @@ public:
     std::vector<int> col_indices_;
     std::vector<int> row_ptrs_;
 
-    SparseMatrix(const Matrix<T> &A) {
+    explicit SparseMatrix(const Matrix<T> &A) {
         rows_ = A.rows();
         cols_ = A.cols();
         row_ptrs_.resize(rows_ + 1, 0);
@@ -40,5 +40,19 @@ public:
         }
     }
 };
+
+template<typename T>
+Matrix<T> operator*(const SparseMatrix<T> &A, const Matrix<T> &x) {
+    if (A.cols_ != x.rows()) {
+        throw std::invalid_argument("Matrix dimensions do not match for multiplication");
+    }
+    Matrix<T> result(A.rows_, x.cols());
+    for (int i = 0; i < A.rows_; ++i) {
+        for (int j = A.row_ptrs_[i]; j < A.row_ptrs_[i + 1]; ++j) {
+            result[i][0] += A.values_[j] * x[A.col_indices_[j]][0];
+        }
+    }
+    return result;
+}
 
 #endif //NUMERICAL_ALGEBRA_SPARSE_UTILS_H

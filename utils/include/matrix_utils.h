@@ -18,6 +18,13 @@ protected:
     int rows_, cols_;
     std::vector<T> data_;
 public:
+    Matrix(int rows, int cols, T *data) {
+        rows_ = rows;
+        cols_ = cols;
+        data_.resize(rows * cols);
+        std::memcpy(data_.data(), data, rows * cols * sizeof(T));
+    }
+
     Matrix(int rows, int cols) : rows_(rows), cols_(cols), data_(rows * cols, T(0)) {}
 
     Matrix() {

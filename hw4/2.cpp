@@ -48,10 +48,11 @@ void prob2_sparse(int N) {
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
 //    for (int i = 0; i <= N; ++i) {
+//        std::cout << "{";
 //        for (int j = 0; j <= N; ++j) {
-//            std::cout << std::fixed << std::setprecision(2) << x[idx(i, j)][0] << " ";
+//            std::cout << std::fixed << std::setprecision(6) << x[idx(i, j)][0] << ", "[j == N];
 //        }
-//        std::cout << std::endl;
+//        std::cout << "},";
 //    }
     //  b.print();
     std::cout << "---------------Sparse---------------" << std::endl;

@@ -91,4 +91,62 @@ int SOR_Method(const Matrix<T> &A, const Matrix<T> &b, Matrix<T> &x, int max_ite
     return max_iter;
 }
 
+template<typename T>
+int CG_Method(const Matrix<T> &A, const Matrix<T> &b, Matrix<T> &x, int max_iter = 10000, T tol = 1e-4) {
+    Matrix<T> r = b - (A * x);
+    Matrix<T> p;
+    T rho = (r.transpose() * r)[0][0];
+    T rho_last;
+    for (int n = 1; n <= max_iter; ++n) {
+        if (n == 1) {
+            p = r;
+        } else {
+            T beta = rho / rho_last;
+            p = r + p * beta;
+        }
+        Matrix<T> Ap = A * p;
+        T alpha = rho / (p.transpose() * Ap)[0][0];
+        x = x + p * alpha;
+        r = r - Ap * alpha;
+        rho_last = rho;
+        rho = (r.transpose() * r)[0][0];
+        if (std::sqrt(rho) < tol * b.norm_F()) {
+            return n;
+        }
+    }
+    return max_iter;
+}
+
+template<typename T>
+int CG_Method(const SparseMatrix<T> &A, const Matrix<T> &b, Matrix<T> &x, int max_iter = 10000, T tol = 1e-4) {
+    Matrix<T> r = b - (A * x);
+    Matrix<T> p;
+    T rho = (r.transpose() * r)[0][0];
+    T rho_last;
+
+    //std::cerr << b.norm_F() << std::endl;
+    //std::cerr << "Initial residual norm: " << std::sqrt(rho) << std::endl;
+
+
+    for (int n = 1; n <= max_iter; ++n) {
+        if (n == 1) {
+            p = r;
+        } else {
+            T beta = rho / rho_last;
+            p = r + p * beta;
+        }
+        Matrix<T> Ap = A * p;
+        T alpha = rho / (p.transpose() * Ap)[0][0];
+        x = x + p * alpha;
+        r = r - Ap * alpha;
+        rho_last = rho;
+        rho = (r.transpose() * r)[0][0];
+        //std::cerr << "Iteration " << n << ", residual norm: " << std::sqrt(rho) << std::endl;
+        if (std::sqrt(rho) < tol * b.norm_F()) {
+            return n;
+        }
+    }
+    return max_iter;
+}
+
 #endif //NUMERICAL_ALGEBRA_IT_METHOD_H
